@@ -101,24 +101,25 @@ function parseCantoneseBraille(brailleString) {
 
   const numberMap = {
     '⠁': '1', '⠃': '2', '⠉': '3', '⠙': '4', '⠑': '5',
-    '⠋': '6', '⠛': '7', '⠓': '8', '⠊': '9', '⠚': '0'
+    '⠋': '6', '⠛': '7', '⠓': '8', '⠊': '9', '⠚': '0', 
+    '⠀': ' '
   };
 
   const punctuationMap = {
     // Single character punctuations
     '⠿': '。',     // period (dots-123456)
-    '⠤': ',',     // comma (dots-36)
+    '⠤': '，',     // comma (dots-36)
     '⠘': '、',     // enumeration comma (dots-45)
-    '⠰⠆': '·',   // middle dot (dots-56,23)
+    '⠰⠆': '‧',   // middle dot (dots-56,23)
     
     // Multi-character punctuations with space patterns
-    '⠦⠀': '?',    // question mark (dots-236, blank)
-    '⠮⠀': '!',    // exclamation mark (dots-2346, blank)
-    '⠒⠀': ':',    // colon (dots-25, blank)
-    '⠢⠀': ';',    // semicolon (dots-26, blank)
+    '⠦⠀': '？',    // question mark (dots-236, blank)
+    '⠮⠀': '！',    // exclamation mark (dots-2346, blank)
+    '⠒⠀': '：',    // colon (dots-25, blank)
+    '⠢⠀': '；',    // semicolon (dots-26, blank)
     '⠤⠄': '-',    // hyphen (dots-36,3)
     '⠤⠤': '—',    // em dash (dots-36,36)
-    '⠄⠄⠄': '…', // ellipsis (dots-3,3,3)
+    '⠄⠄⠄': '⋯', // ellipsis (dots-3,3,3)
     
     // Brackets and quotes
     '⠶': '(',      // opening parenthesis (dots-2356)
@@ -135,8 +136,8 @@ function parseCantoneseBraille(brailleString) {
     '⠴⠄⠀': '』', // closing double corner bracket (dots-356,3, blank)
     '⠷': '「',     // alt opening corner bracket (dots-12356)
     '⠻⠀': '」',   // alt closing corner bracket (dots-12456, blank)
-    '⠸': '[重]',   // emphasis start (dots-456)
-    '⠵⠀': '[/重]', // emphasis end (dots-1356, blank)
+    '⠸': '**',   // emphasis start (dots-456)
+    '⠵⠀': '**', // emphasis end (dots-1356, blank)
   };
 
   const chars = [...brailleString]; // Use spread syntax to handle unicode characters properly
@@ -167,9 +168,9 @@ function parseCantoneseBraille(brailleString) {
       // Check if next character is also a number or if we've reached end
       if (i >= chars.length || (!numberMap[chars[i]] && chars[i] !== '⠼')) {
         inNumberMode = false;
-        if (i < chars.length) {
-          romanization += ' ';
-        }
+        // if (i < chars.length) {
+        //   romanization += ' ';
+        // }
       }
       continue;
     }
