@@ -208,6 +208,18 @@ function parseCantoneseBraille(brailleString) {
       continue;
     }
 
+    // Apply initial consonant rules for finals without initials
+    if (initial === '') {
+      // If final begins with 'y' or 'i' (but not 'ik' or 'ing'), add 'j'
+      if ((final.startsWith('y') || final.startsWith('i')) && final !== 'ik' && final !== 'ing') {
+        initial = 'j';
+      }
+      // If final is 'u', 'un', or 'ut', add 'w'
+      else if (final === 'u' || final === 'un' || final === 'ut') {
+        initial = 'w';
+      }
+    }
+
     romanization += `${initial}${final}${tone}`;
     
     // Add space between syllables for better readability
