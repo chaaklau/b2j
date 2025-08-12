@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cantonese Braille to Jyutping Converter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .input-section, .output-section {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-size: 1.1em;
+        }
+        
+        textarea, input {
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        textarea {
+            padding: 15px;
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+        }
+        
+        input {
+            padding: 12px 15px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .braille-input {
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+        
+        .jyutping-output {
+            background-color: #f7fafc;
+            color: #2d3748;
+        }
+        
+        .clear-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .clear-btn:hover {
+            background: #c53030;
+        }
+        
+        .example-section {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .example-section h3 {
+            margin-top: 0;
+            color: #4a5568;
+        }
+        
+        .example {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .example-braille {
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            letter-spacing: 1px;
+            color: #2b6cb0;
+        }
+        
+        .example-jyutping {
+            font-family: 'Courier New', monospace;
+            color: #38a169;
+            margin-top: 5px;
+        }
+        
+        .statistics {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e6fffa;
+            border-radius: 8px;
+            border-left: 4px solid #38b2ac;
+        }
+        
+        .char-count {
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔤 Cantonese Braille → Jyutping</h1>
+        <p class="subtitle">Real-time converter for Cantonese Braille to Jyutping romanization</p>
+        
+        <div class="input-section">
+            <label for="brailleInput">Enter Cantonese Braille:</label>
+            <textarea 
+                id="brailleInput" 
+                class="braille-input"
+                placeholder="Type or paste Cantonese Braille characters here... ⠏⠁⠈"
+                autocomplete="off"
+                spellcheck="false"
+            ></textarea>
+            <p class="help-text">Tip: You can type Braille characters directly or copy-paste them from other sources</p>
+            <button class="clear-btn" onclick="clearInput()">Clear Input</button>
+        </div>
+        
+        <div class="output-section">
+            <label for="jyutpingOutput">Jyutping Output:</label>
+            <textarea 
+                id="jyutpingOutput" 
+                class="jyutping-output"
+                readonly
+                placeholder="Jyutping romanization will appear here..."
+            ></textarea>
+            <div class="statistics">
+                <div class="char-count">
+                    Braille characters: <span id="brailleCount">0</span> | 
+                    Jyutping syllables: <span id="syllableCount">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="example-section">
+            <h3>📝 Examples:</h3>
+            <div class="example" onclick="loadExample('⠍⠃⠠⠾⠬⠈⠋⠟⠚⠸')">
+                <div class="example-braille">⠍⠃⠠⠾⠬⠈⠋⠟⠚⠸⠈</div>
+                <div class="example-jyutping">→ maa5taai3fuk1jam1</div>
+            </div>
+            <div class="example" onclick="loadExample('⠟⠰⠁⠞⠦⠺⠃⠂')">
+                <div class="example-braille">⠟⠰⠁⠞⠦⠺⠃⠂</div>
+                <div class="example-jyutping">→ gwong2dung1waa6</div>
+            </div>
+            <p class="help-text">Click on any example to load it into the converter</p>
+        </div>
+    </div>
+
+    <script src="b2j.js"></script>
+    <script>
+        const brailleInput = document.getElementById('brailleInput');
+        const jyutpingOutput = document.getElementById('jyutpingOutput');
+        const brailleCount = document.getElementById('brailleCount');
+        const syllableCount = document.getElementById('syllableCount');
+
+        // Convert Braille to Jyutping as user types
+        brailleInput.addEventListener('input', function() {
+            const brailleText = this.value;
+            
+            try {
+                const jyutping = parseCantoneseBraille(brailleText);
+                jyutpingOutput.value = jyutping;
+                
+                // Update statistics
+                const brailleChars = brailleText.replace(/\s+/g, '').length;
+                const syllables = jyutping ? jyutping.match(/[a-z]+\d/g) : [];
+                
+                brailleCount.textContent = brailleChars;
+                syllableCount.textContent = syllables ? syllables.length : 0;
+                
+            } catch (error) {
+                console.error('Error converting Braille:', error);
+                jyutpingOutput.value = 'Error: Unable to convert. Please check your Braille input.';
+                brailleCount.textContent = '0';
+                syllableCount.textContent = '0';
+            }
+        });
+
+        // Load example into input
+        function loadExample(brailleText) {
+            brailleInput.value = brailleText;
+            brailleInput.dispatchEvent(new Event('input'));
+            brailleInput.focus();
+        }
+
+        // Clear input function
+        function clearInput() {
+            brailleInput.value = '';
+            jyutpingOutput.value = '';
+            brailleCount.textContent = '0';
+            syllableCount.textContent = '0';
+            brailleInput.focus();
+        }
+
+        // Auto-resize textarea based on content
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.max(120, textarea.scrollHeight) + 'px';
+        }
+
+        brailleInput.addEventListener('input', function() {
+            autoResize(this);
+        });
+
+        jyutpingOutput.addEventListener('input', function() {
+            autoResize(this);
+        });
+
+        // Focus on input when page loads
+        window.addEventListener('load', function() {
+            brailleInput.focus();
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + K to clear
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                clearInput();
+            }
+            
+            // Escape to focus input
+            if (e.key === 'Escape') {
+                brailleInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
