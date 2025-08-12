@@ -7,66 +7,67 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
+            font-size: 14px;
         }
         
         .container {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
         
         h1 {
             text-align: center;
             color: #4a5568;
-            margin-bottom: 30px;
-            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-size: 1.8em;
         }
         
         .subtitle {
             text-align: center;
             color: #718096;
-            margin-bottom: 40px;
-            font-size: 1.1em;
+            margin-bottom: 25px;
+            font-size: 0.9em;
         }
         
         .input-section, .output-section {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         label {
             display: block;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #4a5568;
-            font-size: 1.1em;
+            font-size: 1em;
         }
         
         textarea, input {
             width: 100%;
             border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 18px;
+            border-radius: 6px;
+            font-size: 14px;
             transition: border-color 0.3s ease;
             box-sizing: border-box;
         }
         
         textarea {
-            padding: 15px;
-            min-height: 120px;
+            padding: 10px;
+            min-height: 80px;
             resize: vertical;
             font-family: 'Courier New', monospace;
-            line-height: 1.5;
+            line-height: 1.4;
         }
         
         input {
-            padding: 12px 15px;
+            padding: 8px 10px;
             font-family: 'Courier New', monospace;
         }
         
@@ -77,8 +78,8 @@
         }
         
         .braille-input {
-            font-size: 24px;
-            letter-spacing: 2px;
+            font-size: 18px;
+            letter-spacing: 1px;
         }
         
         .jyutping-output {
@@ -90,11 +91,11 @@
             background: #e53e3e;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 8px 16px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
+            font-size: 12px;
+            margin-top: 8px;
             transition: background-color 0.3s ease;
         }
         
@@ -104,27 +105,29 @@
         
         .example-section {
             background: #edf2f7;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 30px;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
         }
         
         .example-section h3 {
             margin-top: 0;
             color: #4a5568;
+            font-size: 1.1em;
         }
         
         .example {
-            margin: 10px 0;
-            padding: 10px;
+            margin: 8px 0;
+            padding: 8px;
             background: white;
-            border-radius: 5px;
-            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
+            cursor: pointer;
         }
         
         .example-braille {
             font-family: 'Courier New', monospace;
-            font-size: 20px;
+            font-size: 16px;
             letter-spacing: 1px;
             color: #2b6cb0;
         }
@@ -132,26 +135,27 @@
         .example-jyutping {
             font-family: 'Courier New', monospace;
             color: #38a169;
-            margin-top: 5px;
+            margin-top: 3px;
+            font-size: 13px;
         }
         
         .statistics {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 15px;
+            padding: 12px;
             background: #e6fffa;
-            border-radius: 8px;
-            border-left: 4px solid #38b2ac;
+            border-radius: 6px;
+            border-left: 3px solid #38b2ac;
         }
         
         .char-count {
             color: #4a5568;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .help-text {
-            font-size: 14px;
+            font-size: 12px;
             color: #718096;
-            margin-top: 5px;
+            margin-top: 4px;
             font-style: italic;
         }
     </style>
@@ -192,13 +196,21 @@
         
         <div class="example-section">
             <h3>📝 Examples:</h3>
+            <div class="example" onclick="loadExample('⠼⠁⠊⠚⠚')">
+                <div class="example-braille">⠼⠁⠊⠚⠚</div>
+                <div class="example-jyutping">→ 1890</div>
+            </div>
             <div class="example" onclick="loadExample('⠍⠃⠠⠾⠬⠈⠋⠟⠚⠸')">
                 <div class="example-braille">⠍⠃⠠⠾⠬⠈⠋⠟⠚⠸⠈</div>
-                <div class="example-jyutping">→ maa5taai3fuk1jam1</div>
+                <div class="example-jyutping">→ maa5 taai3 fuk1 jam1</div>
             </div>
             <div class="example" onclick="loadExample('⠟⠰⠁⠞⠦⠺⠃⠂')">
                 <div class="example-braille">⠟⠰⠁⠞⠦⠺⠃⠂</div>
-                <div class="example-jyutping">→ gwong2dung1waa6</div>
+                <div class="example-jyutping">→ gwong2 dung1 waa6</div>
+            </div>
+            <div class="example" onclick="loadExample('⠓⠃⠁⠀⠍⠊⠂')">
+                <div class="example-braille">⠓⠃⠁⠀⠍⠊⠂</div>
+                <div class="example-jyutping">→ haa1 | moi5 (space becomes pipe)</div>
             </div>
             <p class="help-text">Click on any example to load it into the converter</p>
         </div>
@@ -253,7 +265,7 @@
         // Auto-resize textarea based on content
         function autoResize(textarea) {
             textarea.style.height = 'auto';
-            textarea.style.height = Math.max(120, textarea.scrollHeight) + 'px';
+            textarea.style.height = Math.max(80, textarea.scrollHeight) + 'px';
         }
 
         brailleInput.addEventListener('input', function() {

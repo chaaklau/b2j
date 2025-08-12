@@ -75,10 +75,10 @@ function parseCantoneseBraille(brailleString) {
     
     // oe series
     '⠱': 'oe',    // ⠱ (dots-156)
-    '⠚': 'oey',   // ⠚ (dots-245)
-    '⠎': 'oen',   // ⠎ (dots-234)
+    '⠚': 'eoi',   // ⠚ (dots-245)
+    '⠎': 'eon',   // ⠎ (dots-234)
     '⠒': 'oeng',  // ⠒ (dots-25)
-    '⠭': 'oet',   // ⠭ (dots-1346)
+    '⠭': 'eot',   // ⠭ (dots-1346)
     '⠪': 'oek',   // ⠪ (dots-246)
     
     // y series (yu)
@@ -98,9 +98,50 @@ function parseCantoneseBraille(brailleString) {
     // Note: There are two ⠄ entries in the source - using first occurrence for tone 4, second would be tone 9
   };
 
+  const numberMap = {
+    '⠁': '1', '⠃': '2', '⠉': '3', '⠙': '4', '⠑': '5',
+    '⠋': '6', '⠛': '7', '⠓': '8', '⠊': '9', '⠚': '0'
+  };
+
+  const punctuationMap = {
+    // Single character punctuations
+    '⠿': '。',     // period (dots-123456)
+    '⠤': ',',     // comma (dots-36)
+    '⠘': '、',     // enumeration comma (dots-45)
+    '⠰⠆': '·',   // middle dot (dots-56,23)
+    
+    // Multi-character punctuations with space patterns
+    '⠦⠀': '?',    // question mark (dots-236, blank)
+    '⠮⠀': '!',    // exclamation mark (dots-2346, blank)
+    '⠒⠀': ':',    // colon (dots-25, blank)
+    '⠢⠀': ';',    // semicolon (dots-26, blank)
+    '⠤⠄': '-',    // hyphen (dots-36,3)
+    '⠤⠤': '—',    // em dash (dots-36,36)
+    '⠄⠄⠄': '…', // ellipsis (dots-3,3,3)
+    
+    // Brackets and quotes
+    '⠶': '(',      // opening parenthesis (dots-2356)
+    '⠶⠀': ')',    // closing parenthesis (dots-2356, blank)
+    '⠠⠶': '[',    // opening square bracket (dots-6,2356)
+    '⠶⠄⠀': ']', // closing square bracket (dots-2356,3, blank)
+    '⠣': '《',     // opening double angle bracket (dots-126)
+    '⠜⠀': '》',   // closing double angle bracket (dots-345, blank)
+    '⠠⠣': '〈',   // opening single angle bracket (dots-6,126)
+    '⠜⠄⠀': '〉', // closing single angle bracket (dots-345,3, blank)
+    '⠦': '「',     // opening corner bracket (dots-236)
+    '⠴⠀': '」',   // closing corner bracket (dots-356, blank)
+    '⠠⠦': '『',   // opening double corner bracket (dots-6,236)
+    '⠴⠄⠀': '』', // closing double corner bracket (dots-356,3, blank)
+    '⠷': '「',     // alt opening corner bracket (dots-12356)
+    '⠻⠀': '」',   // alt closing corner bracket (dots-12456, blank)
+    '⠸': '[重]',   // emphasis start (dots-456)
+    '⠵⠀': '[/重]', // emphasis end (dots-1356, blank)
+  };
+
   const chars = [...brailleString]; // Use spread syntax to handle unicode characters properly
   let romanization = '';
   let i = 0;
+  let inNumberMode = false;
 
   while (i < chars.length) {
     let initial = '';
@@ -110,6 +151,66 @@ function parseCantoneseBraille(brailleString) {
     const char1 = chars[i];
     const char2 = chars[i + 1];
     const char3 = chars[i + 2];
+
+    // Handle number prefix ⠼
+    if (char1 === '⠼') {
+      inNumberMode = true;
+      i++;
+      continue;
+    }
+    // Handle numbers when in number mode
+    if (inNumberMode && numberMap[char1]) {
+      romanization += numberMap[char1];
+      i++;
+      
+      // Check if next character is also a number or if we've reached end
+      if (i >= chars.length || (!numberMap[chars[i]] && chars[i] !== '⠼')) {
+        inNumberMode = false;
+        if (i < chars.length) {
+          romanization += ' ';
+        }
+      }
+      continue;
+    }
+
+    // Reset number mode if we encounter non-number characters
+    if (inNumberMode && !numberMap[char1] && char1 !== '⠼') {
+      inNumberMode = false;
+    }
+
+    // Handle punctuation - check for multi-character patterns first
+    const nextTwo = char1 + (char2 || '');
+    const nextThree = char1 + (char2 || '') + (char3 || '');
+    
+    // Check for three-character punctuation patterns first
+    if (nextThree === '⠄⠄⠄') {
+      romanization += punctuationMap[nextThree];
+      i += 3;
+      if (i < chars.length) {
+        romanization += ' ';
+      }
+      continue;
+    }
+    
+    // Check for two-character punctuation patterns
+    if (punctuationMap[nextTwo]) {
+      romanization += punctuationMap[nextTwo];
+      i += 2;
+      if (i < chars.length) {
+        romanization += ' ';
+      }
+      continue;
+    }
+    
+    // Check for single-character punctuation
+    if (punctuationMap[char1]) {
+      romanization += punctuationMap[char1];
+      i++;
+      if (i < chars.length) {
+        romanization += ' ';
+      }
+      continue;
+    }
 
     // Check for compound tone markers first (dots-6 based)
     if (char1 === '⠠' && char2) {
@@ -201,10 +302,14 @@ function parseCantoneseBraille(brailleString) {
         }
       }
     }
-    // If no pattern matches, skip the character to avoid an infinite loop
+    // If no pattern matches, display illegal character as-is and skip to avoid infinite loop
     else {
       console.warn(`Unrecognized Braille character or sequence starting with: ${char1}`);
+      romanization += char1;
       i++;
+      if (i < chars.length) {
+        romanization += ' ';
+      }
       continue;
     }
 
