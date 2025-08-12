@@ -6,292 +6,342 @@
     <title>Cantonese Braille to Jyutping Converter</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 700px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 10px;
+            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
-            font-size: 14px;
+            font-size: 16px;
         }
         
         .container {
             background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            backdrop-filter: blur(10px);
         }
         
         h1 {
             text-align: center;
-            color: #4a5568;
-            margin-bottom: 20px;
-            font-size: 1.8em;
+            color: #1a202c;
+            margin-bottom: 8px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .subtitle {
             text-align: center;
             color: #718096;
-            margin-bottom: 25px;
-            font-size: 0.9em;
+            margin-bottom: 40px;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+        
+        .translation-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 32px;
+            padding: 16px 24px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .direction-indicator {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4a5568;
+            letter-spacing: 0.5px;
+        }
+        
+        .swap-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px 0 rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .swap-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px 0 rgba(102, 126, 234, 0.4);
+        }
+        
+        .swap-btn:active {
+            transform: translateY(0);
+        }
+        
+        .swap-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .swap-btn:hover .swap-icon {
+            transform: rotate(180deg);
         }
         
         .input-section, .output-section {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 6px;
-            color: #4a5568;
-            font-size: 1em;
-        }
-        
-        textarea, input {
-            width: 100%;
-            border: 2px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-            box-sizing: border-box;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-size: 1rem;
         }
         
         textarea {
-            padding: 10px;
-            min-height: 80px;
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            padding: 16px;
+            min-height: 120px;
             resize: vertical;
-            font-family: 'Courier New', monospace;
-            line-height: 1.4;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            line-height: 1.6;
+            background: #ffffff;
         }
         
-        input {
-            padding: 8px 10px;
-            font-family: 'Courier New', monospace;
-        }
-        
-        textarea:focus, input:focus {
+        textarea:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: #fafafa;
         }
         
-        .braille-input {
+        .input-field {
             font-size: 18px;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         
-        .jyutping-output {
-            background-color: #f7fafc;
+        .output-field {
+            background-color: #f8fafc !important;
             color: #2d3748;
+            cursor: default;
         }
         
-        .clear-btn {
-            background: #e53e3e;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-top: 8px;
-            transition: background-color 0.3s ease;
-        }
-        
-        .clear-btn:hover {
-            background: #c53030;
-        }
-        
-        .example-section {
-            background: #edf2f7;
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 20px;
-        }
-        
-        .example-section h3 {
-            margin-top: 0;
-            color: #4a5568;
-            font-size: 1.1em;
-        }
-        
-        .example {
-            margin: 8px 0;
-            padding: 8px;
-            background: white;
-            border-radius: 4px;
-            border-left: 3px solid #667eea;
-            cursor: pointer;
-        }
-        
-        .example-braille {
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-            letter-spacing: 1px;
-            color: #2b6cb0;
-        }
-        
-        .example-jyutping {
-            font-family: 'Courier New', monospace;
-            color: #38a169;
-            margin-top: 3px;
-            font-size: 13px;
+        .output-field:focus {
+            background-color: #f1f5f9 !important;
         }
         
         .statistics {
-            margin-top: 15px;
-            padding: 12px;
-            background: #e6fffa;
-            border-radius: 6px;
-            border-left: 3px solid #38b2ac;
+            margin-top: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, #e6fffa 0%, #f0fff4 100%);
+            border-radius: 12px;
+            border: 1px solid #9ae6b4;
         }
         
         .char-count {
-            color: #4a5568;
-            font-size: 12px;
-        }
-
-        .help-text {
-            font-size: 12px;
-            color: #718096;
-            margin-top: 4px;
-            font-style: italic;
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔤 Cantonese Braille → Jyutping</h1>
-        <p class="subtitle">Real-time converter for Cantonese Braille to Jyutping romanization</p>
+        <h1>🔤 Cantonese Braille ⇄ Jyutping</h1>
+        <p class="subtitle">Bidirectional converter for Cantonese Braille and Jyutping romanization</p>
+        
+        <div class="translation-header">
+            <div class="direction-indicator" id="directionIndicator">Braille → Jyutping</div>
+            <button class="swap-btn" id="swapBtn" onclick="toggleDirection()" title="Swap direction">
+                <span class="swap-icon">⇄</span>
+            </button>
+        </div>
         
         <div class="input-section">
-            <label for="brailleInput">Enter Cantonese Braille:</label>
+            <label for="input" id="inputLabel">Enter Cantonese Braille:</label>
             <textarea 
-                id="brailleInput" 
-                class="braille-input"
-                placeholder="Type or paste Cantonese Braille characters here... ⠏⠁⠈"
+                id="input" 
+                class="input-field"
+                placeholder="Type or paste Cantonese Braille characters here..."
                 autocomplete="off"
                 spellcheck="false"
             ></textarea>
-            <p class="help-text">Tip: You can type Braille characters directly or copy-paste them from other sources</p>
-            <button class="clear-btn" onclick="clearInput()">Clear Input</button>
         </div>
         
         <div class="output-section">
-            <label for="jyutpingOutput">Jyutping Output:</label>
+            <label for="output" id="outputLabel">Jyutping Output:</label>
             <textarea 
-                id="jyutpingOutput" 
-                class="jyutping-output"
+                id="output" 
+                class="output-field"
                 readonly
                 placeholder="Jyutping romanization will appear here..."
             ></textarea>
             <div class="statistics">
-                <div class="char-count">
-                    Braille characters: <span id="brailleCount">0</span> | 
-                    Jyutping syllables: <span id="syllableCount">0</span>
+                <div class="char-count" id="statsText">
+                    Input characters: <span id="inputCount">0</span> | 
+                    Output characters: <span id="outputCount">0</span>
                 </div>
             </div>
-        </div>
-        
-        <div class="example-section">
-            <h3>📝 Examples:</h3>
-            <div class="example" onclick="loadExample('⠼⠁⠊⠚⠚')">
-                <div class="example-braille">⠼⠁⠊⠚⠚</div>
-                <div class="example-jyutping">→ 1890</div>
-            </div>
-            <div class="example" onclick="loadExample('⠍⠃⠠⠾⠬⠈⠋⠟⠚⠸')">
-                <div class="example-braille">⠍⠃⠠⠾⠬⠈⠋⠟⠚⠸⠈</div>
-                <div class="example-jyutping">→ maa5 taai3 fuk1 jam1</div>
-            </div>
-            <div class="example" onclick="loadExample('⠟⠰⠁⠞⠦⠺⠃⠂')">
-                <div class="example-braille">⠟⠰⠁⠞⠦⠺⠃⠂</div>
-                <div class="example-jyutping">→ gwong2 dung1 waa6</div>
-            </div>
-            <div class="example" onclick="loadExample('⠓⠃⠁⠀⠍⠊⠂')">
-                <div class="example-braille">⠓⠃⠁⠀⠍⠊⠂</div>
-                <div class="example-jyutping">→ haa1 | moi5 (space becomes pipe)</div>
-            </div>
-            <p class="help-text">Click on any example to load it into the converter</p>
         </div>
     </div>
 
     <script src="b2j.js"></script>
     <script>
-        const brailleInput = document.getElementById('brailleInput');
-        const jyutpingOutput = document.getElementById('jyutpingOutput');
-        const brailleCount = document.getElementById('brailleCount');
-        const syllableCount = document.getElementById('syllableCount');
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        const inputCount = document.getElementById('inputCount');
+        const outputCount = document.getElementById('outputCount');
+        const inputLabel = document.getElementById('inputLabel');
+        const outputLabel = document.getElementById('outputLabel');
+        const statsText = document.getElementById('statsText');
+        const directionIndicator = document.getElementById('directionIndicator');
+        const swapBtn = document.getElementById('swapBtn');
 
-        // Convert Braille to Jyutping as user types
-        brailleInput.addEventListener('input', function() {
-            const brailleText = this.value;
+        let currentDirection = 'b2j';
+
+        // Toggle direction function
+        function toggleDirection() {
+            // Store current values
+            const inputValue = input.value;
+            const outputValue = output.value;
             
-            try {
-                const jyutping = parseCantoneseBraille(brailleText);
-                jyutpingOutput.value = jyutping;
-                
-                // Update statistics
-                const brailleChars = brailleText.replace(/\s+/g, '').length;
-                const syllables = jyutping ? jyutping.match(/[a-z]+\d/g) : [];
-                
-                brailleCount.textContent = brailleChars;
-                syllableCount.textContent = syllables ? syllables.length : 0;
-                
-            } catch (error) {
-                console.error('Error converting Braille:', error);
-                jyutpingOutput.value = 'Error: Unable to convert. Please check your Braille input.';
-                brailleCount.textContent = '0';
-                syllableCount.textContent = '0';
-            }
-        });
-
-        // Load example into input
-        function loadExample(brailleText) {
-            brailleInput.value = brailleText;
-            brailleInput.dispatchEvent(new Event('input'));
-            brailleInput.focus();
+            // Swap the direction
+            currentDirection = currentDirection === 'b2j' ? 'j2b' : 'b2j';
+            
+            // Swap the content
+            input.value = outputValue;
+            output.value = '';
+            
+            updateDirection();
+            performConversion();
         }
 
-        // Clear input function
-        function clearInput() {
-            brailleInput.value = '';
-            jyutpingOutput.value = '';
-            brailleCount.textContent = '0';
-            syllableCount.textContent = '0';
-            brailleInput.focus();
+        // Update UI based on direction
+        function updateDirection() {
+            if (currentDirection === 'b2j') {
+                directionIndicator.textContent = 'Braille → Jyutping';
+                inputLabel.textContent = 'Enter Cantonese Braille:';
+                outputLabel.textContent = 'Jyutping Output:';
+                input.placeholder = 'Type or paste Cantonese Braille characters here...';
+                output.placeholder = 'Jyutping romanization will appear here...';
+                statsText.innerHTML = 'Input characters: <span id="inputCount">0</span> | Output characters: <span id="outputCount">0</span>';
+            } else {
+                directionIndicator.textContent = 'Jyutping → Braille';
+                inputLabel.textContent = 'Enter Jyutping:';
+                outputLabel.textContent = 'Braille Output:';
+                input.placeholder = 'Type or paste Jyutping romanization here...';
+                output.placeholder = 'Cantonese Braille will appear here...';
+                statsText.innerHTML = 'Input characters: <span id="inputCount">0</span> | Output characters: <span id="outputCount">0</span>';
+            }
+            
+            // Update count elements after DOM change
+            updateCounts();
+        }
+
+        // Update character counts
+        function updateCounts() {
+            const inputText = input.value;
+            const outputText = output.value;
+            
+            // Reattach count elements after innerHTML change
+            const newInputCount = document.getElementById('inputCount');
+            const newOutputCount = document.getElementById('outputCount');
+            
+            const inputChars = inputText.replace(/\s+/g, '').length;
+            const outputChars = outputText.replace(/\s+/g, '').length;
+            
+            if (newInputCount) newInputCount.textContent = inputChars;
+            if (newOutputCount) newOutputCount.textContent = outputChars;
+        }
+
+        // Perform conversion based on current direction
+        function performConversion() {
+            const inputText = input.value.trim();
+            
+            if (!inputText) {
+                output.value = '';
+                updateCounts();
+                return;
+            }
+            
+            try {
+                let result;
+                if (currentDirection === 'b2j') {
+                    result = parseCantoneseBraille(inputText);
+                } else {
+                    result = parseJyutpingToBraille(inputText);
+                }
+                output.value = result;
+                updateCounts();
+                
+            } catch (error) {
+                console.error('Conversion error:', error);
+                output.value = 'Error: Unable to convert. Please check your input.';
+                updateCounts();
+            }
+        }
+
+        // Load example into input
+        function loadExample(text, direction = null) {
+            if (direction && direction !== currentDirection) {
+                // Switch direction if specified
+                currentDirection = direction;
+                updateDirection();
+            }
+            
+            input.value = text;
+            performConversion();
+            input.focus();
         }
 
         // Auto-resize textarea based on content
         function autoResize(textarea) {
             textarea.style.height = 'auto';
-            textarea.style.height = Math.max(80, textarea.scrollHeight) + 'px';
+            textarea.style.height = Math.max(120, textarea.scrollHeight) + 'px';
         }
 
-        brailleInput.addEventListener('input', function() {
+        // Event listeners
+        input.addEventListener('input', function() {
+            performConversion();
             autoResize(this);
         });
 
-        jyutpingOutput.addEventListener('input', function() {
+        output.addEventListener('input', function() {
             autoResize(this);
         });
 
         // Focus on input when page loads
         window.addEventListener('load', function() {
-            brailleInput.focus();
+            updateDirection();
+            input.focus();
         });
 
         // Add keyboard shortcuts
         document.addEventListener('keydown', function(e) {
-            // Ctrl/Cmd + K to clear
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                clearInput();
-            }
-            
             // Escape to focus input
             if (e.key === 'Escape') {
-                brailleInput.focus();
+                input.focus();
+            }
+            
+            // Ctrl/Cmd + Shift + S to toggle direction
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'S') {
+                e.preventDefault();
+                toggleDirection();
             }
         });
     </script>
