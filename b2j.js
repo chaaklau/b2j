@@ -322,7 +322,7 @@ function parseCantoneseBraille(brailleString) {
         initial = 'j';
       }
       // If final is 'u', 'un', or 'ut', add 'w'
-      else if (final === 'u' || final === 'un' || final === 'ut') {
+      else if (final === 'u' || final === 'un' || final === 'ut' || final === 'ui') {
         initial = 'w';
       }
     }
