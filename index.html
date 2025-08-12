@@ -5,73 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cantonese Braille to Jyutping Converter</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
             font-size: 16px;
+            padding: 20px;
         }
         
         .container {
+            max-width: 700px;
+            margin: 0 auto;
             background: white;
             border-radius: 16px;
             padding: 32px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 16px;
         }
         
         h1 {
-            text-align: center;
             color: #1a202c;
-            margin-bottom: 8px;
-            font-size: 2.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            transition: all 0.3s ease;
+            text-align: center;
+            line-height: 1.3;
         }
         
         .subtitle {
             text-align: center;
             color: #718096;
-            margin-bottom: 40px;
-            font-size: 1rem;
-            font-weight: 400;
-        }
-        
-        .translation-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
             margin-bottom: 32px;
-            padding: 16px 24px;
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
         
-        .direction-indicator {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #4a5568;
-            letter-spacing: 0.5px;
-        }
         
         .swap-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 16px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 14px 0 rgba(102, 126, 234, 0.3);
             display: flex;
@@ -116,7 +112,7 @@
             transition: all 0.3s ease;
             box-sizing: border-box;
             padding: 16px;
-            min-height: 120px;
+            min-height: 100px;
             resize: vertical;
             font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
             line-height: 1.6;
@@ -147,56 +143,67 @@
         
         .statistics {
             margin-top: 16px;
-            padding: 16px;
+            padding: 12px;
             background: linear-gradient(135deg, #e6fffa 0%, #f0fff4 100%);
-            border-radius: 12px;
+            border-radius: 8px;
             border: 1px solid #9ae6b4;
         }
         
         .char-count {
             color: #2d3748;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔤 Cantonese Braille ⇄ Jyutping</h1>
-        <p class="subtitle">Bidirectional converter for Cantonese Braille and Jyutping romanization</p>
-        
-        <div class="translation-header">
-            <div class="direction-indicator" id="directionIndicator">Braille → Jyutping</div>
-            <button class="swap-btn" id="swapBtn" onclick="toggleDirection()" title="Swap direction">
+        <div class="header">
+            <h1 id="mainTitle">粵語點字 ⇄ 粵拼<br>Cantonese Braille → Jyutping</h1>
+            <button class="swap-btn" id="swapBtn" onclick="toggleDirection()" title="切換方向 / Switch direction">
                 <span class="swap-icon">⇄</span>
             </button>
         </div>
         
+        <p class="subtitle">
+            雙向粵語點字與粵拼轉換器<br>
+            Bidirectional converter for Cantonese Braille and Jyutping romanization
+        </p>
+    
         <div class="input-section">
-            <label for="input" id="inputLabel">Enter Cantonese Braille:</label>
+            <label for="input" id="inputLabel">輸入粵語點字 / Enter Cantonese Braille:</label>
             <textarea 
                 id="input" 
                 class="input-field"
-                placeholder="Type or paste Cantonese Braille characters here..."
+                placeholder="喺呢度輸入或者貼上粵語點字字符... / Type or paste Cantonese Braille characters here..."
                 autocomplete="off"
                 spellcheck="false"
             ></textarea>
         </div>
         
         <div class="output-section">
-            <label for="output" id="outputLabel">Jyutping Output:</label>
+            <label for="output" id="outputLabel">粵拼輸出 / Jyutping Output:</label>
             <textarea 
                 id="output" 
                 class="output-field"
                 readonly
-                placeholder="Jyutping romanization will appear here..."
+                placeholder="粵拼羅馬化會喺呢度顯示... / Jyutping romanization will appear here..."
             ></textarea>
             <div class="statistics">
                 <div class="char-count" id="statsText">
-                    Input characters: <span id="inputCount">0</span> | 
-                    Output characters: <span id="outputCount">0</span>
+                    輸入字符 Input characters: <span id="inputCount">0</span> | 
+                    輸出字符 Output characters: <span id="outputCount">0</span>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="typeduck-footer" style="width:100%; background:#fff; border-radius:8px; margin:32px auto 0; padding:16px 0; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 2px 8px 0 rgba(102,126,234,0.06); font-size:1rem;">
+        <a href="https://typeduck.hk" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; justify-content:center;">
+            <img src="./typeduck-logo.webp" alt="TypeDuck Logo" style="height:32px; width:auto; margin-bottom:8px;"/>
+        </a>
+        <div style="color:#2d3748; font-weight:600; letter-spacing:0.5px; margin-top:2px;">
+            TypeDuck 粵拼輸入法
         </div>
     </div>
 
@@ -209,7 +216,7 @@
         const inputLabel = document.getElementById('inputLabel');
         const outputLabel = document.getElementById('outputLabel');
         const statsText = document.getElementById('statsText');
-        const directionIndicator = document.getElementById('directionIndicator');
+        const mainTitle = document.getElementById('mainTitle');
         const swapBtn = document.getElementById('swapBtn');
 
         let currentDirection = 'b2j';
@@ -234,19 +241,19 @@
         // Update UI based on direction
         function updateDirection() {
             if (currentDirection === 'b2j') {
-                directionIndicator.textContent = 'Braille → Jyutping';
-                inputLabel.textContent = 'Enter Cantonese Braille:';
-                outputLabel.textContent = 'Jyutping Output:';
-                input.placeholder = 'Type or paste Cantonese Braille characters here...';
-                output.placeholder = 'Jyutping romanization will appear here...';
-                statsText.innerHTML = 'Input characters: <span id="inputCount">0</span> | Output characters: <span id="outputCount">0</span>';
+                mainTitle.innerHTML = '粵語點字 → 粵拼<br>Cantonese Braille → Jyutping';
+                inputLabel.textContent = '輸入粵語點字 / Enter Cantonese Braille:';
+                outputLabel.textContent = '粵拼輸出 / Jyutping Output:';
+                input.placeholder = '喺呢度輸入或者貼上粵語點字字符... / Type or paste Cantonese Braille characters here...';
+                output.placeholder = '粵拼羅馬化會喺呢度顯示... / Jyutping romanization will appear here...';
+                statsText.innerHTML = '輸入字符 Input characters: <span id="inputCount">0</span> | 輸出字符 Output characters: <span id="outputCount">0</span>';
             } else {
-                directionIndicator.textContent = 'Jyutping → Braille';
-                inputLabel.textContent = 'Enter Jyutping:';
-                outputLabel.textContent = 'Braille Output:';
-                input.placeholder = 'Type or paste Jyutping romanization here...';
-                output.placeholder = 'Cantonese Braille will appear here...';
-                statsText.innerHTML = 'Input characters: <span id="inputCount">0</span> | Output characters: <span id="outputCount">0</span>';
+                mainTitle.innerHTML = '粵拼 → 粵語點字<br>Jyutping → Cantonese Braille';
+                inputLabel.textContent = '輸入粵拼 / Enter Jyutping:';
+                outputLabel.textContent = '點字輸出 / Braille Output:';
+                input.placeholder = '喺呢度輸入或者貼上粵拼羅馬化... / Type or paste Jyutping romanization here...';
+                output.placeholder = '粵語點字會喺呢度顯示... / Cantonese Braille will appear here...';
+                statsText.innerHTML = '輸入字符 Input characters: <span id="inputCount">0</span> | 輸出字符 Output characters: <span id="outputCount">0</span>';
             }
             
             // Update count elements after DOM change
