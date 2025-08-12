@@ -88,6 +88,7 @@ function parseCantoneseBraille(brailleString) {
   };
 
   const toneMap = {
+    '⠀': '1', // high level, (empty)
     '⠁': '2', // high rising tone (dots-1)
     '⠈': '3', // mid level tone (dots-4) 
     '⠄': '4', // low falling tone (dots-3)
