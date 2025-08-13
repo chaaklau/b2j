@@ -16,7 +16,6 @@ const initialMap = {
 };
 
 const finalMap = {
-
   // aa series
   '⠃': 'aa',    // ⠃ (dots-12)
   '⠬': 'aai',   // ⠬ (dots-346) 
@@ -107,43 +106,74 @@ const numberMap = {
 };
 
 const punctuationMap = {
-  // Single character punctuations
-  '⠿': '。',     // period (dots-123456)
+  // Punctuations
+  '⠿': '。',     // period without blank (non-standard but unambiguous)
+  '⠿⠀': '。',     // period (dots-123456, blank)
   '⠤': '，',     // comma (dots-36)
   '⠘': '、',     // enumeration comma (dots-45)
-  '⠰⠆': '‧',   // middle dot (dots-56,23)
-  
-  // Multi-character punctuations with space patterns
+  '⠰⠆': '‧',     // middle dot (dots-56,23)
   '⠦⠀': '？',    // question mark (dots-236, blank)
   '⠮⠀': '！',    // exclamation mark (dots-2346, blank)
   '⠒⠀': '：',    // colon (dots-25, blank)
   '⠢⠀': '；',    // semicolon (dots-26, blank)
   '⠤⠄': '-',    // hyphen (dots-36,3)
   '⠤⠤': '—',    // em dash (dots-36,36)
-  '⠄⠄⠄': '⋯', // ellipsis (dots-3,3,3)
+  '⠄⠄⠄': '…',   // ellipsis without blank (non-standard but unambiguous)
+  '⠀⠄⠄⠄⠀': '…', // ellipsis (blank, dots-3,3,3, blank)
   
   // Brackets and quotes
-  '⠶': '(',      // opening parenthesis (dots-2356)
-  '⠶⠀': ')',    // closing parenthesis (dots-2356, blank)
-  '⠠⠶': '[',    // opening square bracket (dots-6,2356)
-  '⠶⠄⠀': ']', // closing square bracket (dots-2356,3, blank)
-  '⠣': '《',     // opening double angle bracket (dots-126)
+  '⠀⠶': '（',      // opening parenthesis (blank, dots-2356)
+  '⠶⠀': '）',    // closing parenthesis (dots-2356, blank)
+  '⠀⠠⠶': '［',    // opening square bracket (blank, dots-6,2356)
+  '⠶⠄⠀': '］', // closing square bracket (dots-2356,3, blank)
+  '⠀⠣': '《',     // opening double angle bracket (blank, dots-126)
   '⠜⠀': '》',   // closing double angle bracket (dots-345, blank)
-  '⠠⠣': '〈',   // opening single angle bracket (dots-6,126)
+  '⠀⠠⠣': '〈',   // opening single angle bracket (blank, dots-6,126)
   '⠜⠄⠀': '〉', // closing single angle bracket (dots-345,3, blank)
-  '⠦': '「',     // opening corner bracket (dots-236)
+  '⠀⠦': '「',     // opening corner bracket (blank, dots-236)
   '⠴⠀': '」',   // closing corner bracket (dots-356, blank)
-  '⠠⠦': '『',   // opening double corner bracket (dots-6,236)
+  '⠀⠠⠦': '『',   // opening double corner bracket (blank, dots-6,236)
   '⠴⠄⠀': '』', // closing double corner bracket (dots-356,3, blank)
-  '⠷': '「',     // alt opening corner bracket (dots-12356)
+  '⠀⠷': '「',     // alt opening corner bracket (blank, dots-12356)
   '⠻⠀': '」',   // alt closing corner bracket (dots-12456, blank)
-  '⠸': '**',   // emphasis start (dots-456)
+  '⠀⠸': '**',   // emphasis start (blank, dots-456)
   '⠵⠀': '**', // emphasis end (dots-1356, blank)
 };
 
-function parseCantoneseBraille(brailleString) {
+// Create reverse mappings from the original maps
+const reverseInitialMap = {};
+const reverseFinalMap = {};
+const reverseToneMap = {};
+const reverseNumberMap = {};
+const reversePunctuationMap = {};
 
-  const chars = [...brailleString]; // Use spread syntax to handle unicode characters properly
+// Build reverse mappings
+Object.entries(initialMap).forEach(([braille, sound]) => {
+  reverseInitialMap[sound] = braille;
+});
+
+Object.entries(finalMap).forEach(([braille, sound]) => {
+  reverseFinalMap[sound] = braille;
+});
+
+Object.entries(toneMap).forEach(([braille, tone]) => {
+  reverseToneMap[tone] = braille;
+});
+
+Object.entries(numberMap).forEach(([braille, num]) => {
+  reverseNumberMap[num] = braille;
+});
+
+Object.entries(punctuationMap).forEach(([braille, punct]) => {
+  reversePunctuationMap[punct] = braille;
+});
+
+function parseCantoneseBraille(brailleString) {
+  const chars = Array.from(brailleString.toUpperCase(), ch => {
+    const order = ` A1B'K2L@CIF/MSP"E3H9O6R^DJG>NTQ,*5<-U8V.%[$+X!&;:4\\0Z7(_?W]#Y)=`.indexOf(ch);
+    return order !== -1 ? String.fromCodePoint(0x2800 + order) : ch;
+  });
+  
   let romanization = '';
   let i = 0;
   let inNumberMode = false;
@@ -186,9 +216,20 @@ function parseCantoneseBraille(brailleString) {
     // Handle punctuation - check for multi-character patterns first
     const nextTwo = char1 + (char2 || '');
     const nextThree = char1 + (char2 || '') + (char3 || '');
+    const nextFive = chars.slice(i, i + 5).join('');
     
-    // Check for three-character punctuation patterns first
-    if (nextThree === '⠄⠄⠄') {
+    // Check for five-character punctuation patterns first
+    if (punctuationMap[nextFive]) {
+      romanization += punctuationMap[nextFive];
+      i += 5;
+      if (i < chars.length) {
+        romanization += ' ';
+      }
+      continue;
+    }
+    
+    // Check for three-character punctuation patterns
+    if (punctuationMap[nextThree]) {
       romanization += punctuationMap[nextThree];
       i += 3;
       if (i < chars.length) {
@@ -302,10 +343,20 @@ function parseCantoneseBraille(brailleString) {
           }
         } else {
           console.warn(`Unrecognized pattern: ${char1}${char2 || ''}`);
+          romanization += char1;
           i++;
+          if (i < chars.length) {
+            romanization += ' ';
+          }
           continue;
         }
       }
+    }
+    // Replace blank braille characters with normal spaces
+    else if (char1 === '⠀') {
+      romanization += ' ';
+      i++;
+      continue;
     }
     // If no pattern matches, display illegal character as-is and skip to avoid infinite loop
     else {
@@ -324,8 +375,8 @@ function parseCantoneseBraille(brailleString) {
       if ((final.startsWith('y') || final.startsWith('i')) && final !== 'ik' && final !== 'ing') {
         initial = 'j';
       }
-      // If final is 'u', 'un', or 'ut', add 'w'
-      else if (final === 'u' || final === 'un' || final === 'ut' || final === 'ui') {
+      // If final begins with 'u' (but now 'uk' or 'ung'), add 'w'
+      else if (final.startsWith('u') && final !== 'uk' && final !== 'ung') {
         initial = 'w';
       }
       if (final === 'ang' && (tone === '4' || tone === '5' || tone === '6' )) {
@@ -347,7 +398,8 @@ function parseCantoneseBraille(brailleString) {
   // Apply romanization to Jyutping conversion rules
   romanization = rom2jp(romanization);
   
-  return romanization.trim(); // Remove trailing space
+  // Trim for each line
+  return romanization.replace(/^\s*(.*)\s*$/gm, '$1');
 }
 
 // Convert romanization to proper Jyutping format
@@ -359,58 +411,26 @@ function rom2jp(romanization) {
 
 // Convert Jyutping back to romanization format (reverse of rom2jp)
 function jp2rom(jyutping) {
-  let result = " " + jyutping.replace(/p6/g, 'p4')
-                      .replace(/t6/g, 't4')
-                      .replace(/k6/g, 'k4');
+  let result = jyutping.replace(/p6/g, 'p4')
+                       .replace(/t6/g, 't4')
+                       .replace(/k6/g, 'k4');
   
   // Remove j before y or i (except ik and ing)
-  result = result.replace(/j(y[a-z]*)/g, '$1'); // Remove j before y
-  result = result.replace(/j(i(?!k|ng)[a-z]*)/g, '$1'); // Remove j before i, but not ik or ing
+  result = result.replace(/j(y|i(?!k|ng))/g, '$1');
   
-  // Remove w before u, un, ut, ui
-  result = result.replace(/w(u[nti]?)/g, '$1');
+  // Remove w before u (except uk and ung)
+  result = result.replace(/w(u(?!k|ng))/g, '$1');
   
-  result = result.replace(/ ng(\d)/g,' ang$1');
-  result = result.replace(/ m(\d)/g,' op$1');
+  result = result.replace(/(?<![a-z])ng(?=\d)/g, 'ang');
+  result = result.replace(/(?<![a-z])m(?=\d)/g, 'op');
 
   return result.trim();
 }
 
 // Convert Jyutping to Cantonese Braille
 function parseJyutpingToBraille(jyutpingString) {
-  // Create reverse mappings from the original maps
-  const reverseInitialMap = {};
-  const reverseFinalMap = {};
-  const reverseToneMap = {};
-  const reverseNumberMap = {};
-  const reversePunctuationMap = {};
-  
-  // Build reverse mappings
-  Object.entries(initialMap).forEach(([braille, sound]) => {
-    reverseInitialMap[sound] = braille;
-  });
-  
-  Object.entries(finalMap).forEach(([braille, sound]) => {
-    reverseFinalMap[sound] = braille;
-  });
-  
-  Object.entries(toneMap).forEach(([braille, tone]) => {
-    reverseToneMap[tone] = braille;
-  });
-  
-  Object.entries(numberMap).forEach(([braille, num]) => {
-    reverseNumberMap[num] = braille;
-  });
-  
-  Object.entries(punctuationMap).forEach(([braille, punct]) => {
-    reversePunctuationMap[punct] = braille;
-  });
-  
-  // Convert Jyutping to romanization format first
-  const romanization = jp2rom(jyutpingString);
-  
-  // Split into tokens (syllables, numbers, punctuation, pipe)
-  const tokens = romanization.split(/\s+/).filter(token => token.length > 0);
+  // Split into tokens (syllables, punctuation, spaces)
+  const tokens = jyutpingString.match(/([a-z]*\d|\S|\s+)/gi);
   let brailleResult = '';
   
   for (let i = 0; i < tokens.length; i++) {
@@ -434,34 +454,42 @@ function parseJyutpingToBraille(jyutpingString) {
     }
     
     // Handle syllables - parse initial, final, tone
-    const syllableMatch = token.match(/^([bcdfghjklmnpqrstvwxyz]*?)([aeiouy][a-z]*)(\d)$/);
+    const syllableMatch = jp2rom(token.toLowerCase()).match(/^([bcdfghjklmnpqrstvwxyz]*?)([aeiouy][a-z]*)(\d)$/);
     if (syllableMatch) {
       const [, initial, final, tone] = syllableMatch;
       
-      // Add initial if present
-      if (initial && reverseInitialMap[initial]) {
-        brailleResult += reverseInitialMap[initial];
-      }
-      
-      // Add final
-      if (reverseFinalMap[final]) {
+      // If syllable is recognized
+      if ((!initial || reverseInitialMap[initial]) && reverseFinalMap[final] && reverseToneMap[tone]) {
+        // Add initial if present
+        if (initial) {
+          brailleResult += reverseInitialMap[initial];
+        }
+        
+        // Add final
         brailleResult += reverseFinalMap[final];
-      }
-      
-      // Add tone if not tone 1 (unmarked)
-      if ((tone !== '1' && reverseToneMap[tone]) || !initial) {
-        brailleResult += reverseToneMap[tone];
+        
+        // reverseToneMap[3] returns checked tone 3, so non-checked tone 3 is specially handled
+        if (tone === '3' && !/[ptk]$/.test(final)) {
+          brailleResult += '⠈';
+        }
+        // Add tone if not tone 1 or in case of monograph
+        else if (tone !== '1' || !initial) {
+          brailleResult += reverseToneMap[tone];
+        }
+        
+      //   if (i < tokens.length - 1) brailleResult += ' ';
+        continue;
       }
 
-    //   if (i < tokens.length - 1) brailleResult += ' ';
-    } else {
-      // If token doesn't match expected pattern, add as-is
-      brailleResult += token;
-    //   if (i < tokens.length - 1) brailleResult += ' ';
     }
+    
+    // If token is not recognized, add as-is
+    brailleResult += token;
+  //   if (i < tokens.length - 1) brailleResult += ' ';
   }
   
-  return brailleResult.trim();
+  // Trim and remove spaces between braille for each line
+  return brailleResult.replace(/^\s*(.*)\s*$/gm, (_, line) => line.replace(/(?<=[⠀-⠿])\s+(?=[⠀-⠿])/g, ''));
 }
 
 // Export functions for use in other modules if needed
